@@ -59,7 +59,7 @@ export class IpoAlertsGmpProvider implements GmpDataProvider {
   private readonly maxRetries = 2;
 
   constructor() {
-    const key = process.env.IPOALERTS_API_KEY;
+    const key = process.env['IPOALERTS_API_KEY'];
     if (!key) {
       throw new Error(
         'IPOALERTS_API_KEY is not configured. ' +

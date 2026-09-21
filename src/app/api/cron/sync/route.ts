@@ -5,7 +5,7 @@ import { getDataMode } from '@/lib/providers';
 export async function GET(request: NextRequest) {
   // Verify cron secret
   const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
+  const cronSecret = process.env['CRON_SECRET'];
   
   if (!cronSecret) {
     return NextResponse.json(

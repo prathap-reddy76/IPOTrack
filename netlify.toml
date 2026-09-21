@@ -1,0 +1,24 @@
+# ╔══════════════════════════════════════════════════════════╗
+# ║              IPOTrack — Netlify Configuration            ║
+# ╚══════════════════════════════════════════════════════════╝
+
+[build]
+  # Use Webpack instead of Turbopack for production builds.
+  #
+  # WHY: Turbopack writes a persistent LevelDB cache (.next/cache/turbopack/*.sst)
+  # that contains a snapshot of ALL process.env values for cache invalidation.
+  # Netlify's Secrets Scanner detects server-side env var values (AUTH_SECRET,
+  # CRON_SECRET, etc.) inside these .sst files and blocks the deploy.
+  #
+  # Using --webpack avoids the Turbopack cache entirely.
+  # The postbuild cleanup is a safety net in case Turbopack runs anyway
+  # (e.g., via restored build cache from a previous deploy).
+  command = "npm run build && node scripts/clean-turbopack-cache.mjs"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Netlify Functions settings (for SSR/API routes)
+[functions]
+  node_bundler = "esbuild"

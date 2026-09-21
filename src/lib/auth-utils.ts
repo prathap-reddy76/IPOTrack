@@ -2,7 +2,9 @@ import 'server-only';
 import { hash, compare } from 'bcryptjs';
 import crypto from 'crypto';
 
-const SECRET = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'fallback-secret-change-me';
+function getSecret(): string {
+  return process.env['JWT_SECRET'] || process.env['NEXTAUTH_SECRET'] || 'fallback-secret-change-me';
+}
 
 export async function hashPassword(password: string): Promise<string> {
   return hash(password, 10);
@@ -28,7 +30,7 @@ export function createToken(payload: { userId: string; email: string }): string 
   const encodedPayload = base64url(JSON.stringify(jwtPayload));
   const signatureInput = `${encodedHeader}.${encodedPayload}`;
   
-  const signature = crypto.createHmac('sha256', SECRET).update(signatureInput).digest();
+  const signature = crypto.createHmac('sha256', getSecret()).update(signatureInput).digest();
   const encodedSignature = base64url(signature);
 
   return `${signatureInput}.${encodedSignature}`;
@@ -42,7 +44,7 @@ export function verifyToken(token: string): { userId: string; email: string } | 
     const [encodedHeader, encodedPayload, encodedSignature] = parts;
     const signatureInput = `${encodedHeader}.${encodedPayload}`;
     
-    const signature = crypto.createHmac('sha256', SECRET).update(signatureInput).digest();
+    const signature = crypto.createHmac('sha256', getSecret()).update(signatureInput).digest();
     const expectedSignature = base64url(signature);
     
     if (encodedSignature !== expectedSignature) {

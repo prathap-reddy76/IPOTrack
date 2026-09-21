@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 
 export async function createAdminUser(email: string, password: string, name: string, setupSecret: string) {
   try {
-    if (setupSecret !== process.env.AUTH_SECRET) {
+    if (setupSecret !== process.env['AUTH_SECRET']) {
       throw new Error('Invalid setup secret');
     }
 

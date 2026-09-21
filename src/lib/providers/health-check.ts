@@ -67,7 +67,7 @@ async function checkUpstox(hasToken: boolean): Promise<ProviderHealthResult> {
     // Lightweight check: fetch upcoming IPOs (should be fast)
     const response = await fetch('https://api.upstox.com/v2/ipos?status=upcoming', {
       headers: {
-        'Authorization': `Bearer ${process.env.UPSTOX_ACCESS_TOKEN}`,
+        'Authorization': `Bearer ${process.env['UPSTOX_ACCESS_TOKEN']}`,
         'Accept': 'application/json',
       },
       signal: controller.signal,
@@ -146,7 +146,7 @@ async function checkIpoAlerts(hasKey: boolean): Promise<ProviderHealthResult> {
     // Lightweight check: fetch a small list of IPOs
     const response = await fetch('https://api.ipoalerts.in/ipos?status=upcoming', {
       headers: {
-        'x-api-key': process.env.IPOALERTS_API_KEY!,
+        'x-api-key': process.env['IPOALERTS_API_KEY']!,
         'Accept': 'application/json',
       },
       signal: controller.signal,

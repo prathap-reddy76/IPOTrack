@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Prevent bcryptjs from being bundled into client-side output
+  serverExternalPackages: ['bcryptjs'],
 };
 
 export default nextConfig;

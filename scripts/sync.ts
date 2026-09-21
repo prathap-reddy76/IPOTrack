@@ -17,10 +17,10 @@ async function main() {
   const isDryRun = args.includes('--dry-run') || args.includes('--dry');
   const syncType = args.find(a => !a.startsWith('--'))?.toUpperCase();
 
-  const dataMode = process.env.DATA_MODE || 'demo';
-  const ipoProvider = process.env.IPO_DATA_PROVIDER || 'none';
-  const hasUpstoxToken = !!process.env.UPSTOX_ACCESS_TOKEN;
-  const hasIpoAlertsKey = !!process.env.IPOALERTS_API_KEY;
+  const dataMode = process.env['DATA_MODE'] || 'demo';
+  const ipoProvider = process.env['IPO_DATA_PROVIDER'] || 'none';
+  const hasUpstoxToken = !!process.env['UPSTOX_ACCESS_TOKEN'];
+  const hasIpoAlertsKey = !!process.env['IPOALERTS_API_KEY'];
 
   console.log('╔══════════════════════════════════════╗');
   console.log('║       IPOTrack Sync Service          ║');
@@ -95,7 +95,7 @@ async function main() {
       }
     } else {
       // Live sync: call the cron API endpoint
-      const cronSecret = process.env.CRON_SECRET;
+      const cronSecret = process.env['CRON_SECRET'];
       if (!cronSecret) {
         console.log('❌ CRON_SECRET not set in environment.');
         console.log('   Add CRON_SECRET=yoursecret to .env.local');

@@ -31,7 +31,7 @@ let cachedGmpProvider: GmpDataProvider | null = null;
 // ── Data Mode ──────────────────────────────────────────────
 
 export function getDataMode(): 'demo' | 'live' {
-  const mode = process.env.DATA_MODE?.toLowerCase();
+  const mode = process.env['DATA_MODE']?.toLowerCase();
   if (mode === 'live') return 'live';
   return 'demo';
 }
@@ -49,7 +49,7 @@ export function isLiveMode(): boolean {
 export function getGmpProvider(): GmpDataProvider | null {
   if (cachedGmpProvider) return cachedGmpProvider;
 
-  const apiKey = process.env.IPOALERTS_API_KEY;
+  const apiKey = process.env['IPOALERTS_API_KEY'];
   if (!apiKey) return null;
 
   try {
@@ -73,7 +73,7 @@ export function getProvider(): IpoDataProvider {
   }
 
   // Live mode — check for configured provider
-  const providerName = process.env.IPO_DATA_PROVIDER?.toLowerCase();
+  const providerName = process.env['IPO_DATA_PROVIDER']?.toLowerCase();
 
   if (!providerName) {
     throw new Error(
@@ -118,10 +118,10 @@ export function getProviderInfo(): {
 } {
   return {
     mode: getDataMode(),
-    ipoProvider: process.env.IPO_DATA_PROVIDER ?? 'none',
-    gmpProvider: process.env.IPOALERTS_API_KEY ? 'ipoalerts.in' : 'none',
-    hasUpstoxToken: !!process.env.UPSTOX_ACCESS_TOKEN,
-    hasIpoAlertsKey: !!process.env.IPOALERTS_API_KEY,
+    ipoProvider: process.env['IPO_DATA_PROVIDER'] ?? 'none',
+    gmpProvider: process.env['IPOALERTS_API_KEY'] ? 'ipoalerts.in' : 'none',
+    hasUpstoxToken: !!process.env['UPSTOX_ACCESS_TOKEN'],
+    hasIpoAlertsKey: !!process.env['IPOALERTS_API_KEY'],
   };
 }
 

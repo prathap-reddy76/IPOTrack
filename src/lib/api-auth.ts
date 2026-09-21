@@ -2,7 +2,9 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
 
-const SECRET = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'fallback-secret-change-me';
+function getSecret(): string {
+  return process.env['JWT_SECRET'] || process.env['NEXTAUTH_SECRET'] || 'fallback-secret-change-me';
+}
 
 export async function getAuthUserId(): Promise<string | null> {
   const cookieStore = await cookies();
@@ -17,7 +19,7 @@ export async function getAuthUserId(): Promise<string | null> {
     const [headerB64, payloadB64, signatureB64] = parts;
 
     // Verify signature
-    const signature = crypto.createHmac('sha256', SECRET)
+    const signature = crypto.createHmac('sha256', getSecret())
                             .update(`${headerB64}.${payloadB64}`)
                             .digest('base64url');
                             
