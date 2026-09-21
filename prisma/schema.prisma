@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Ipo {
+  id                  String                @id @default(uuid())
+  slug                String                @unique
+  ipoName             String                @map("ipo_name")
+  companyName         String                @map("company_name")
+  ipoType             String                @default("Mainboard") @map("ipo_type")
+  status              String                @default("Upcoming")
+  openDate            DateTime?             @map("open_date")
+  closeDate           DateTime?             @map("close_date")
+  allotmentDate       DateTime?             @map("allotment_date")
+  listingDate         DateTime?             @map("listing_date")
+  priceBandMin        Decimal               @default(0) @map("price_band_min") @db.Decimal(12, 2)
+  priceBandMax        Decimal               @default(0) @map("price_band_max") @db.Decimal(12, 2)
+  lotSize             Int                   @default(0) @map("lot_size")
+  issueSize           String?               @map("issue_size")
+  issueSizeCrore      Decimal               @default(0) @map("issue_size_crore") @db.Decimal(12, 2)
+  faceValue           Decimal               @default(10) @map("face_value") @db.Decimal(8, 2)
+  gmp                 Int                   @default(0)
+  previousGmp         Int                   @default(0) @map("previous_gmp")
+  gmpUpdatedAt        DateTime?             @map("gmp_updated_at")
+  subTotal            Decimal               @default(0) @map("sub_total") @db.Decimal(8, 2)
+  subRetail           Decimal               @default(0) @map("sub_retail") @db.Decimal(8, 2)
+  subQib              Decimal               @default(0) @map("sub_qib") @db.Decimal(8, 2)
+  subNii              Decimal               @default(0) @map("sub_nii") @db.Decimal(8, 2)
+  subEmployee         Decimal               @default(0) @map("sub_employee") @db.Decimal(8, 2)
+  listingPrice        Decimal?              @map("listing_price") @db.Decimal(12, 2)
+  industry            String                @default("")
+  sector              String                @default("")
+  about               String                @default("")
+  promoters           String[]              @default([])
+  registrar           String                @default("")
+  leadManagers        String[]              @default([]) @map("lead_managers")
+  location            String                @default("")
+  isDeleted           Boolean               @default(false) @map("is_deleted")
+  createdAt           DateTime              @default(now()) @map("created_at")
+  updatedAt           DateTime              @updatedAt @map("updated_at")
+  debtToEquity        Decimal?              @map("debt_to_equity") @db.Decimal(8, 2)
+  dematDate           DateTime?             @map("demat_date")
+  ebitda              Decimal?              @db.Decimal(14, 2)
+  eps                 Decimal?              @db.Decimal(10, 2)
+  exchange            String?
+  freshIssue          String?               @map("fresh_issue")
+  marketMaker         String?               @map("market_maker")
+  netWorth            Decimal?              @map("net_worth") @db.Decimal(14, 2)
+  ofs                 String?
+  profit              Decimal?              @db.Decimal(14, 2)
+  refundDate          DateTime?             @map("refund_date")
+  revenue             Decimal?              @db.Decimal(14, 2)
+  roce                Decimal?              @db.Decimal(8, 2)
+  roe                 Decimal?              @db.Decimal(8, 2)
+  totalAssets         Decimal?              @map("total_assets") @db.Decimal(14, 2)
+  lastVerifiedAt      DateTime?             @map("last_verified_at")
+  source              String?
+  sourceUpdatedAt     DateTime?             @map("source_updated_at")
+  gmpHistory          GmpHistory[]
+  subscriptionHistory SubscriptionHistory[]
+  alerts              UserAlert[]
+  watchlistItems      WatchlistItem[]
+
+  @@map("ipos")
+}
+
+model GmpHistory {
+  id                    String   @id @default(uuid())
+  ipoId                 String   @map("ipo_id")
+  gmp                   Int
+  estimatedListingPrice Decimal? @map("estimated_listing_price") @db.Decimal(12, 2)
+  estimatedGainPercent  Decimal? @map("estimated_gain_percent") @db.Decimal(8, 2)
+  recordedAt            DateTime @default(now()) @map("recorded_at")
+  ipo                   Ipo      @relation(fields: [ipoId], references: [id], onDelete: Cascade)
+
+  @@map("gmp_history")
+}
+
+model AdminUser {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("admin_users")
+}
+
+model User {
+  id             String          @id @default(uuid())
+  name           String
+  email          String          @unique
+  passwordHash   String          @map("password_hash")
+  avatarUrl      String?         @map("avatar_url")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  alerts         UserAlert[]
+  watchlistItems WatchlistItem[]
+
+  @@map("users")
+}
+
+model WatchlistItem {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  ipoId     String   @map("ipo_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  ipo       Ipo      @relation(fields: [ipoId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, ipoId])
+  @@map("watchlist_items")
+}
+
+model UserAlert {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  ipoId     String?  @map("ipo_id")
+  type      String
+  title     String   @default("")
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  ipo       Ipo?     @relation(fields: [ipoId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_alerts")
+}
+
+model SubscriptionHistory {
+  id         String   @id @default(uuid())
+  ipoId      String   @map("ipo_id")
+  date       DateTime @db.Date
+  qib        Decimal  @default(0) @db.Decimal(8, 2)
+  nii        Decimal  @default(0) @db.Decimal(8, 2)
+  retail     Decimal  @default(0) @db.Decimal(8, 2)
+  employee   Decimal  @default(0) @db.Decimal(8, 2)
+  total      Decimal  @default(0) @db.Decimal(8, 2)
+  recordedAt DateTime @default(now()) @map("recorded_at")
+  ipo        Ipo      @relation(fields: [ipoId], references: [id], onDelete: Cascade)
+
+  @@unique([ipoId, date])
+  @@map("subscription_history")
+}
+
+model SyncLog {
+  id               String    @id @default(uuid())
+  type             String
+  status           String    @default("running")
+  recordsUpdated   Int       @default(0) @map("records_updated")
+  recordsFailed    Int       @default(0) @map("records_failed")
+  duration         Int?
+  error            String?
+  startedAt        DateTime  @map("started_at")
+  completedAt      DateTime? @map("completed_at")
+  dryRun           Boolean   @default(false) @map("dry_run")
+  recordsCreated   Int       @default(0) @map("records_created")
+  recordsUnchanged Int       @default(0) @map("records_unchanged")
+
+  @@map("sync_logs")
+}
